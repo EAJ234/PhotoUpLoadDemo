@@ -78,9 +78,37 @@
     //NSLog(@"%@",info);
     //保存原始图片
     UIImage *image = [info objectForKey:UIImagePickerControllerOriginalImage];
-    [self saveImage:image withName:@"currentImage.png"];
+    UIImage *image2 = [self imageCreateTo:image];
+    [self saveImage:image2 withName:@"currentImage.png"];
     
 }
+
+//制作带角标的图片
+- (UIImage *)imageCreateTo:(UIImage *)image1
+{
+    UIImage *imageOrg=[UIImage imageNamed:[NSString stringWithFormat:@"5.png"]];
+    UIImage *image2 = [self imageWithFrame:imageOrg width:image1.size.height*0.2 height:image1.size.height*0.2];
+    UIGraphicsBeginImageContext(image1.size);
+    // Draw image1
+    [image1 drawInRect:CGRectMake(0, 0, image1.size.width, image1.size.height)];
+    // Draw image2
+    [image2 drawInRect:CGRectMake(image1.size.width-image2.size.width, 0, image2.size.width, image2.size.height)];
+    UIImage *resultingImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultingImage;
+}
+
+- (UIImage *)imageWithFrame:(UIImage *)image width:(CGFloat)imageWidth height:(CGFloat)imageHeight
+{
+    CGSize newSize=CGSizeMake(imageWidth, imageHeight);
+    UIGraphicsBeginImageContext(newSize);
+    
+    [image drawInRect:CGRectMake(0,0,imageWidth,imageHeight)];
+    UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
 
 //保存图片
 - (void) saveImage:(UIImage *)currentImage withName:(NSString *)imageName
@@ -89,6 +117,7 @@
     // 获取沙盒目录
     NSString *fullPath = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:imageName];
     // 将图片写入文件
+    NSLog(@"路径为", fullPath);
     [imageData writeToFile:fullPath atomically:NO];
     //将选择的图片显示出来
     [self.photoImage setImage:[UIImage imageWithContentsOfFile:fullPath]];

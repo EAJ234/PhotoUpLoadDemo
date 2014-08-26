@@ -18,7 +18,7 @@
     self.window.rootViewController = mvc;
     self.window.backgroundColor = [UIColor whiteColor];
     //保存图片到相簿
-    for (int d=1;d<=3 ;d++ )
+    for (int d=10;d<=10 ;d++ )
     {
         UIImage *image=[UIImage imageNamed:[NSString stringWithFormat:@"%d.png",d]];
         UIImageWriteToSavedPhotosAlbum(image, self, nil, nil);
