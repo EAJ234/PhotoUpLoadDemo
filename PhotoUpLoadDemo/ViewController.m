@@ -83,20 +83,20 @@
     
 }
 
-//制作带角标的图片
-- (UIImage *)imageCreateTo:(UIImage *)image1
-{
-    UIImage *imageOrg=[UIImage imageNamed:[NSString stringWithFormat:@"5.png"]];
-    UIImage *image2 = [self imageWithFrame:imageOrg width:image1.size.height*0.2 height:image1.size.height*0.2];
-    UIGraphicsBeginImageContext(image1.size);
-    // Draw image1
-    [image1 drawInRect:CGRectMake(0, 0, image1.size.width, image1.size.height)];
-    // Draw image2
-    [image2 drawInRect:CGRectMake(image1.size.width-image2.size.width, 0, image2.size.width, image2.size.height)];
-    UIImage *resultingImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    return resultingImage;
-}
+////以图片制作带角标的图片
+//- (UIImage *)imageCreateTo:(UIImage *)image1
+//{
+//    UIImage *imageOrg=[UIImage imageNamed:[NSString stringWithFormat:@"5.png"]];
+//    UIImage *image2 = [self imageWithFrame:imageOrg width:image1.size.height*0.2 height:image1.size.height*0.2];
+//    UIGraphicsBeginImageContext(image1.size);
+//    // Draw image1
+//    [image1 drawInRect:CGRectMake(0, 0, image1.size.width, image1.size.height)];
+//    // Draw image2
+//    [image2 drawInRect:CGRectMake(image1.size.width-image2.size.width, 0, image2.size.width, image2.size.height)];
+//    UIImage *resultingImage = UIGraphicsGetImageFromCurrentImageContext();
+//    UIGraphicsEndImageContext();
+//    return resultingImage;
+//}
 
 - (UIImage *)imageWithFrame:(UIImage *)image width:(CGFloat)imageWidth height:(CGFloat)imageHeight
 {
@@ -107,6 +107,46 @@
     UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     return newImage;
+}
+
+//在图片上画角标
+- (UIImage *)imageCreateTo:(UIImage *)image1
+{
+    NSString *String = @"1";
+    CGFloat subscriptWidth = image1.size.width*0.2;
+    CGFloat subscriptHeight = image1.size.height*0.2;
+    //当长宽不等时，需要特殊处理，一般以y轴为基准考虑
+    //当长宽比例失衡到相距3倍以上时，以短边为准。
+    if ( subscriptWidth > subscriptHeight * 3 ){
+        subscriptWidth = subscriptHeight;
+    } else  if ( subscriptHeight > subscriptWidth * 3 ){
+        subscriptHeight = subscriptWidth;
+    } else if ( subscriptHeight != subscriptWidth ){
+        subscriptWidth = subscriptHeight;
+    }
+    
+    CGFloat fontSize = subscriptHeight*0.85;
+    UIColor *ovalRed = [[UIColor alloc ]initWithRed:0.850 green: 0.066 blue: 0.066 alpha: 1.000];
+    
+    UIGraphicsBeginImageContext(image1.size);
+    // Draw image1
+    [image1 drawInRect:CGRectMake(0, 0, image1.size.width, image1.size.height)];
+    // Draw oval
+    CGRect RectOnOriginal = CGRectMake(image1.size.width - subscriptWidth, 0, subscriptWidth, subscriptHeight);
+    UIBezierPath *oval = [UIBezierPath bezierPathWithOvalInRect:RectOnOriginal];
+    ovalRed.setFill;
+    oval.fill;
+    //在圆上生成制定字符
+    NSMutableParagraphStyle *ovalStyle = [[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy];
+    //居中
+    ovalStyle.alignment = NSTextAlignmentCenter;
+    NSDictionary *ovalFontAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:fontSize],
+                                         NSForegroundColorAttributeName: [UIColor whiteColor],
+                                         NSParagraphStyleAttributeName: ovalStyle};
+    [String drawInRect:RectOnOriginal withAttributes: ovalFontAttributes];
+    UIImage *resultingImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return resultingImage;
 }
 
 
